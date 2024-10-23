@@ -1,12 +1,21 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { Formik } from 'formik';
+import Axios from 'axios'
+import { useNavigate } from "react-router-dom";
+import Header from '../header';
+import Footer from '../footer/Footer';
 export const SignUp = () => {
+    const [msg,setMsg]=useState('');
+    const navigate = useNavigate();
+
   return (
-    <div className='bg-banner w-full h-[700px] bg-cover max-h-svh bg-no-repeat '>
-        <div className=' absolute h-[450px] w-[300px] bg-slate-800 top-[200px] end-0 right-[300px] font-serif rounded-xl  shadow-2xl '>
+    <div>
+        <Header/>
+        <div className='bg-banner w-full h-[700px] bg-cover max-h-svh bg-no-repeat relative'>
+        <div className='absolute  h-[450px] w-[300px] bg-slate-800 top-[200px] end-0 right-[300px] font-serif rounded-xl  shadow-2xl '>
         <p className='text-center  text-slate-300 text-[30px] font-extrabold bg-gray-500 rounded-xl mb-2 '>Sign up here</p>    
         <Formik
-            initialValues={{ email: '', password: '' }}
+            initialValues={{ name:'',fname:'', lname:'', email: '', password: '' }}
             validate={values => {
                 const errors = {};
                 if (!values.email) {
@@ -19,9 +28,13 @@ export const SignUp = () => {
                 return errors;
             }}
             onSubmit={(values, { setSubmitting }) => {
+                Axios.post('http://localhost:4000/api/v1/users/createUser',values).then((res)=>{
+                    setMsg("User registered")
+                })
                 setTimeout(() => {
-                alert(JSON.stringify(values, null, 2));
+                
                 setSubmitting(false);
+                navigate("/login");
                 }, 400);
             }}
             >
@@ -36,29 +49,41 @@ export const SignUp = () => {
                 /* and other goodies */
             }) => (
                 <form onSubmit={handleSubmit} className='text-center p-2'>
+                <div className='m-4'>
+                    <input
+                    className='w-full border-b-2 p-2'
+                    placeholder='Enter your user name'
+                        type="text"
+                        name="name"
+                        onChange={handleChange}
+                        onBlur={handleBlur}
+                        value={values.name}
+                    />
+                    {errors.name && touched.name && errors.name}
+                </div>
                     <div className='m-4'>
                     <input
                     className='w-full border-b-2 p-2'
                     placeholder='Enter your first name'
                         type="text"
-                        name="text"
+                        name="fname"
                         onChange={handleChange}
                         onBlur={handleBlur}
-                        value={values.fName}
+                        value={values.fname}
                     />
-                    {errors.fName && touched.fName && errors.fName}
+                    {errors.fname && touched.fname && errors.fname}
                 </div>
                 <div className='m-4'>
                     <input
                     className='w-full border-b-2 p-2'
                     placeholder='Enter your last name'
                         type="text"
-                        name="text"
+                        name="lname"
                         onChange={handleChange}
                         onBlur={handleBlur}
-                        value={values.lName}
+                        value={values.lname}
                     />
-                    {errors.lName && touched.lName && errors.lName}
+                    {errors.lname && touched.lname && errors.lname}
                 </div>
                 <div className='m-4'>
                     <input
@@ -84,11 +109,15 @@ export const SignUp = () => {
                     />
                     {errors.password && touched.password && errors.password}
                 </div>
-                <button className='border-yellow-800  items-center border-2 p-2 m-2 mr-2 text-center text-[20px]  text-slate-300 hover:bg-yellow-800'>Sign Up</button>
+                <button  type="submit" className='border-yellow-800  items-center border-2 p-2 m-2 mr-2 text-center text-[20px]  text-slate-300 hover:bg-yellow-800'>Sign Up</button>
+                <p>{msg}</p>
                 </form>
             )}
         </Formik>
         </div>
+        </div>
+        <Footer/>
     </div>
+    
   )
 }
